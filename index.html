@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parth Mohan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --charcoal:#353535;
+    --teal:#3C6E71;
+    --white:#FFFFFF;
+    --bg:#EFEDE7;            /* soft warm off-white page background (not white, not dark) */
+    --grey:#D9D9D9;
+    --navy:#284B63;
+    --radius:8px;
+    --shadow: 0 1px 2px rgba(40,75,99,0.06), 0 4px 16px rgba(40,75,99,0.07);
+    /* one shared fluid width + gutter that every section aligns to */
+    --maxw: min(1600px, 92vw);
+    --pad-x: clamp(18px, 4vw, 48px);
+  }
+  *{box-sizing:border-box;}
+  html{ scroll-behavior:smooth; }
+  /* clip (not hidden) prevents sideways overflow WITHOUT breaking position:sticky */
+  html, body{ overflow-x:clip; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--charcoal);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-size:clamp(15px, 0.45vw + 13.6px, 18px);
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  img, svg, video, canvas{ max-width:100%; }
+  h1,h2,h3{ line-height:1.15; margin:0; font-weight:600; color:var(--charcoal); }
+  a{ color:var(--teal); text-decoration:none; }
+  a:hover{ color:var(--navy); text-decoration:underline; }
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--teal); outline-offset:3px; }
+  ::selection{ background:rgba(60,110,113,0.18); }
+
+  /* ---------- Particle network background ---------- */
+  #particleCanvas{
+    position:fixed; inset:0; width:100%; height:100%;
+    z-index:0; pointer-events:none;
+  }
+
+  .page{ position:relative; z-index:1; }
+
+  /* ---------- Mobile scroll progress ---------- */
+  .progress-rail{
+    position:fixed; top:0; left:0; height:3px; width:0%;
+    background:var(--teal); z-index:60; transition:width 0.05s linear;
+  }
+
+  /* ---------- Top bar ---------- */
+  header.top{
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:10px 24px;
+    padding:22px var(--pad-x); max-width:var(--maxw); margin:0 auto;
+  }
+  .mark{ font-weight:700; font-size:17px; letter-spacing:0.01em; }
+  nav.links{ display:flex; flex-wrap:wrap; gap:14px 24px; }
+  nav.links a{ color:var(--charcoal); font-size:14px; font-weight:500; }
+  nav.links a:hover{ color:var(--teal); text-decoration:none; }
+
+  /* ---------- Hero ---------- */
+  .hero{ max-width:var(--maxw); margin:0 auto; padding:clamp(32px,5vw,56px) var(--pad-x) clamp(40px,6vw,64px); text-align:center; }
+  .avatar-wrap{ display:flex; justify-content:center; margin-bottom:22px; }
+  .avatar{
+    width:clamp(200px, 24vw, 264px); height:clamp(200px, 24vw, 264px); border-radius:50%;
+    object-fit:cover; border:5px solid var(--white);
+    box-shadow:var(--shadow);
+  }
+  .avatar-fallback{
+    display:none; width:clamp(200px, 24vw, 264px); height:clamp(200px, 24vw, 264px); border-radius:50%;
+    background:var(--navy); color:var(--white); align-items:center; justify-content:center;
+    font-size:clamp(50px, 7vw, 70px); font-weight:700; box-shadow:var(--shadow);
+  }
+  .hero h1{ font-size:clamp(28px,4.6vw,50px); max-width:16ch; margin:0 auto; }
+  .hero p.sub{ color:var(--charcoal); opacity:0.72; font-size:clamp(15px,1.1vw,18px); margin:18px auto 0; max-width:56ch; }
+
+  .contact-icons{ display:flex; justify-content:center; gap:14px; margin-top:26px; }
+  .icon-btn{
+    width:40px; height:40px; border-radius:50%;
+    background:var(--white); border:1px solid var(--grey);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--charcoal); transition:all 0.18s ease;
+  }
+  .icon-btn:hover{ background:var(--teal); border-color:var(--teal); color:var(--white); }
+  .icon-btn svg{ width:18px; height:18px; }
+
+  /* ---------- Layout: sticky helix + content ---------- */
+  .layout{
+    max-width:var(--maxw); margin:0 auto; padding:0 var(--pad-x) 40px;
+    display:grid; justify-content:center;
+    grid-template-columns:clamp(240px, 19vw, 340px) minmax(0, 1120px);
+    gap:clamp(26px, 3vw, 52px);
+  }
+  .helix-col{
+    position:sticky; top:0; height:100vh; align-self:start;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .helix-col svg{ width:100%; height:82%; display:block; }
+  .helix-col .strand{ fill:none; stroke-width:4; }
+  .helix-col .strand-front{ stroke:var(--teal); }
+  .helix-col .strand-back{ stroke:var(--grey); }
+  .helix-col .rung{ stroke:var(--grey); stroke-width:1.8; }
+  .helix-col .node{ fill:var(--grey); stroke:var(--white); stroke-width:2; transition:r 0.25s ease, fill 0.25s ease; }
+  .helix-col .node.active{ fill:var(--navy); }
+
+  .now-caption{ text-align:center; margin-top:6px; min-height:64px; }
+  .now-caption .eyebrow{ font-size:12px; color:var(--teal); font-weight:600; margin-bottom:4px; }
+  .now-caption .title{ font-size:19px; font-weight:700; transition:opacity 0.2s ease; }
+  .now-caption .teaser{ font-size:13.5px; color:var(--charcoal); opacity:0.65; margin-top:3px; transition:opacity 0.2s ease; }
+
+  @media (max-width:1080px){
+    .layout{ grid-template-columns:1fr; }
+    .helix-col{ display:none; }
+  }
+  @media (max-width:560px){
+    nav.links{ gap:10px 16px; }
+    nav.links a{ font-size:13px; }
+    .mark{ font-size:16px; }
+    .hero h1{ font-size:clamp(25px,7.5vw,34px); }
+    .build-row{ flex-direction:column; gap:8px; }
+    .build-row .link{ align-self:flex-start; }
+    .phase{ flex:1 1 100%; border-right:none; border-bottom:1px solid var(--grey); }
+    .phase:last-child{ border-bottom:none; }
+    footer .outro{ text-align:left; }
+  }
+
+  /* ---------- Sections / cards ---------- */
+  section{ padding:clamp(30px,4.5vw,48px) 0; border-top:1px solid var(--grey); }
+  section:first-child{ border-top:none; }
+  .kicker{ color:var(--teal); font-size:13px; font-weight:600; margin-bottom:14px; }
+  section h2{ font-size:clamp(22px,2vw,30px); margin-bottom:16px; }
+
+  .card{
+    background:var(--white); border:1px solid var(--grey); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:clamp(20px,3vw,32px);
+  }
+  /* keep line length readable even when the column gets wide on large monitors */
+  .card > p, .callout p{ max-width:92ch; }
+
+  /* ---------- Journey timeline ---------- */
+  .timeline{ margin-top:8px; }
+  .tl-item{ display:flex; gap:16px; padding:16px 0; border-top:1px solid var(--grey); }
+  .tl-item:first-child{ border-top:none; }
+  .tl-marker{
+    flex:0 0 26px; height:26px; border-radius:50%; background:rgba(60,110,113,0.1);
+    color:var(--teal); font-size:12px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; margin-top:2px;
+  }
+  .tl-body{ flex:1; }
+  .tl-when{ color:var(--charcoal); opacity:0.55; font-size:12.5px; margin-bottom:2px; }
+  .tl-body h3{ font-size:15.5px; margin-bottom:4px; }
+  .tl-body p{ margin:0; color:var(--charcoal); opacity:0.75; font-size:14.5px; }
+
+  /* ---------- Media placeholder ---------- */
+  .media-frame{
+    background:rgba(217,217,217,0.3); border:1px dashed var(--grey); border-radius:var(--radius);
+    aspect-ratio:16/10; display:flex; align-items:center; justify-content:center;
+    color:var(--charcoal); opacity:0.65; font-size:14px; margin:20px 0; text-align:center; padding:20px;
+  }
+  video.media-frame{ display:block; width:100%; opacity:1; }
+  .demo-video{
+    display:block; width:100%; margin:20px 0;
+    border:1px solid var(--grey); border-radius:var(--radius);
+    background:#000;
+  }
+
+  .tags{ display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+  .tag{
+    font-size:12.5px; color:var(--teal); background:rgba(60,110,113,0.08);
+    border:1px solid rgba(60,110,113,0.18); padding:5px 12px; border-radius:100px;
+  }
+
+  .phases{ display:flex; flex-wrap:wrap; margin:24px 0 6px; border:1px solid var(--grey); border-radius:var(--radius); overflow:hidden; }
+  .phase{ flex:1 1 140px; padding:14px 14px; border-right:1px solid var(--grey); background:var(--white); }
+  .phase:last-child{ border-right:none; }
+  .phase .num{ color:var(--teal); font-weight:700; font-size:13px; }
+  .phase .name{ font-size:13.5px; margin-top:4px; }
+
+  .callout{
+    background:rgba(60,110,113,0.06); border-left:3px solid var(--teal);
+    padding:18px 20px; border-radius:0 6px 6px 0; margin-top:22px;
+  }
+  .callout .label{ font-size:12.5px; color:var(--teal); font-weight:700; margin-bottom:6px; }
+  .callout p{ margin:0; color:var(--charcoal); font-size:14.5px; }
+  .callout p + p{ margin-top:12px; }
+  .callout.ask{ background:rgba(40,75,99,0.06); border-left-color:var(--navy); }
+  .callout.ask .label{ color:var(--navy); }
+
+  .note{ font-size:12.5px; color:var(--charcoal); opacity:0.55; font-style:italic; margin-top:8px; }
+  .lesson{ font-size:13.5px; color:var(--charcoal); opacity:0.72; margin-top:8px; }
+  .lesson b{ color:var(--teal); font-weight:600; }
+
+  .build-row{ padding:16px 0; border-top:1px solid var(--grey); display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+  .build-row:first-of-type{ border-top:none; }
+  .build-row h3{ font-size:16.5px; margin-bottom:5px; }
+  .build-row p{ color:var(--charcoal); opacity:0.75; margin:0; max-width:80ch; font-size:14.5px; }
+  .build-row .link{ white-space:nowrap; font-size:13.5px; align-self:flex-start; font-weight:600; }
+
+  footer{ padding:50px 0 70px; text-align:center; }
+  footer h2{ font-size:21px; margin-bottom:16px; }
+  footer .outro{ max-width:58ch; margin:0 auto; font-size:14.5px; color:var(--charcoal); opacity:0.8; text-align:left; }
+  footer h2.small{ font-size:17px; margin:30px 0 14px; }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="particleCanvas" aria-hidden="true"></canvas>
+<div class="progress-rail" id="progressRail" aria-hidden="true"></div>
+
+<div class="page">
+
+  <header class="top">
+    <div class="mark">Parth Mohan</div>
+    <nav class="links">
+      <a href="#journey">Journey</a>
+      <a href="#kinetiq">KinetiQ</a>
+      <a href="#bite-right">Bite Right</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="avatar-wrap">
+      <img class="avatar" src="profile.jpg" alt="Parth Mohan"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="avatar-fallback">PM</div>
+    </div>
+    <p class="sub">CS &amp; Machine Learning at the University of Maryland. I like taking AI out of the demo and into something that holds up under real load, real users, and real edge cases.</p>
+
+    <div class="contact-icons">
+      <a class="icon-btn" href="https://github.com/Parth-2025" target="_blank" rel="noopener" aria-label="GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.2c0 4.5 2.87 8.32 6.84 9.67.5.1.68-.22.68-.49v-1.71c-2.78.62-3.37-1.36-3.37-1.36-.46-1.2-1.11-1.52-1.11-1.52-.91-.64.07-.63.07-.63 1 .07 1.53 1.05 1.53 1.05.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.73 0 0 .84-.27 2.75 1.05a9.3 9.3 0 0 1 5 0c1.9-1.32 2.74-1.05 2.74-1.05.56 1.42.21 2.47.11 2.73.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.79-4.57 5.05.36.32.68.94.68 1.9v2.82c0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.2C22 6.58 17.52 2 12 2Z"/></svg>
+      </a>
+      <a class="icon-btn" href="https://www.linkedin.com/in/parth-mohan/" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.94 8.5H3.56V20H6.94V8.5ZM5.25 3.2A1.96 1.96 0 1 0 5.28 7.1A1.96 1.96 0 0 0 5.25 3.2ZM20.45 20H17.08V14c0-1.44-.03-3.3-2.01-3.3-2.02 0-2.33 1.58-2.33 3.2V20H9.36V8.5h3.24v1.57h.05c.45-.85 1.56-1.75 3.21-1.75 3.43 0 4.06 2.26 4.06 5.2V20Z"/></svg>
+      </a>
+      <a class="icon-btn" href="mailto:parthmohan2006@gmail.com" aria-label="Email">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 2v.4l8 5.6 8-5.6V6H4Zm16 12V8.9l-7.4 5.18a1 1 0 0 1-1.2 0L4 8.9V18h16Z"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="layout">
+
+    <div class="helix-col">
+      <svg viewBox="0 0 300 820" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <path class="strand strand-back" id="strandBack"></path>
+        <g id="rungs"></g>
+        <path class="strand strand-front" id="strandFront"></path>
+        <g id="nodes"></g>
+      </svg>
+      <div class="now-caption">
+        <div class="eyebrow">Now showing</div>
+        <div class="title" id="captionTitle">My journey</div>
+        <div class="teaser" id="captionTeaser">Scroll to turn the timeline</div>
+      </div>
+    </div>
+
+    <div class="content-col">
+
+      <section id="journey" data-node="My journey" data-teaser="Where the builder habit started">
+        <h2>My journey</h2>
+        <div class="timeline">
+          <div class="tl-item" data-node="Simcoach Games" data-teaser="Led 8 engineers through a full Unity SDLC">
+            <div class="tl-marker">1</div>
+            <div class="tl-body">
+              <div class="tl-when">Jun–Jul 2024</div>
+              <h3>Simcoach Games — Software Team Lead</h3>
+              <p>Led an 8-person agile team building a performance-optimized Unity kitchen simulation, engineering chunk-based germ-spread algorithms in C#.</p>
+              <p class="lesson"><b>What I learned:</b> the first version recalculated germ spread across the entire kitchen every frame and the game stuttered badly. Splitting the map into chunks and only updating active ones fixed it — and taught me to profile where the time actually goes before rewriting anything. Coordinating eight people who all touched the same scene files was its own problem; we didn't set merge conventions early and lost a day to it.</p>
+            </div>
+          </div>
+          <div class="tl-item" data-node="Computer Society" data-teaser="Managing an agentic AI build end to end">
+            <div class="tl-marker">2</div>
+            <div class="tl-body">
+              <div class="tl-when">Sep 2025–Present</div>
+              <h3>Computer Society — Project Manager</h3>
+              <p>Leading a team building an agentic AI system — setting core architecture, milestones, and sprint planning to accelerate LLM-driven autonomous features.</p>
+            </div>
+          </div>
+          <div class="tl-item" data-node="Aptean" data-teaser="Cut a 300-hour process down to 30">
+            <div class="tl-marker">3</div>
+            <div class="tl-body">
+              <div class="tl-when">May–Aug 2026</div>
+              <h3>Aptean — Software Engineering Intern</h3>
+              <p>Built an automated job-orchestration system that cut manual migration time from 300 to 30 hours per customer, plus an MCP server connecting LLM agents to production migration tooling.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="kinetiq" data-node="KinetiQ" data-teaser="Computer vision that grades your form">
+        <div class="kicker">Featured build</div>
+        <h2>KinetiQ</h2>
+        <div class="card">
+          <p>Upload a video of your swing, shot, or throw — KinetiQ breaks your form down phase by phase and tells you exactly what to fix, using pose estimation instead of a coach.</p>
+
+          <video class="demo-video" controls muted playsinline preload="metadata"
+                 poster="kinetiq-poster.jpg" aria-label="KinetiQ demo: uploading a video and getting a phase-by-phase form breakdown">
+            <source src="kinetiq-demo.mp4" type="video/mp4">
+            <a href="kinetiq-demo.mp4">Download the KinetiQ demo video</a>.
+          </video>
+          <p class="note">Walkthrough: upload a video → KinetiQ isolates the phases of the motion → scores each one and flags what to fix.</p>
+
+          <div class="phases">
+            <div class="phase"><div class="num">01</div><div class="name">Ready position</div></div>
+            <div class="phase"><div class="num">02</div><div class="name">Load</div></div>
+            <div class="phase"><div class="num">03</div><div class="name">Set point</div></div>
+            <div class="phase"><div class="num">04</div><div class="name">Release</div></div>
+            <div class="phase"><div class="num">05</div><div class="name">Follow-through</div></div>
+          </div>
+          <p class="note">A custom phase-detection algorithm isolates these five biomechanical phases from a single video and scores joint angles against ideal ranges for each one.</p>
+
+          <div class="tags">
+            <span class="tag">React Native</span>
+            <span class="tag">FastAPI</span>
+            <span class="tag">MediaPipe</span>
+            <span class="tag">Firebase</span>
+            <span class="tag">Auth0</span>
+          </div>
+
+          <div class="callout">
+            <div class="label">The hard part</div>
+            <p>The difficult part of creating this app was the integration of MediaPipe into this software. Determining the pose estimations was extremely compute-heavy, and under a real load the backend would skip frames or stall completely. I had to redesign the architecture to be able to have a system to split the uploaded videos into snapshots every so many seconds to identify the frame with the pose detection.</p>
+          </div>
+
+          <div class="callout">
+            <div class="label">What I learned</div>
+            <p>KinetiQ taught me more about what can break and what worked. I spent days addressing scaling failures, as it was one of my biggest issues. Under a real load, MediaPipe would skip frames or stall completely. I had to go back and redesign the architecture to cleanly distribute processing evenly. Another issue I faced was Auth0. This was my first time using it, and many times the small issues ended up being the hardest issues to track and resolve: tokens needed to be refreshed properly, wiring the callback URLs correctly, and making sure Auth0 persisted in the app correctly. None of it was conceptually hard; however, it was a real reminder that integrating a new tool always costs more time than expected.</p>
+            <p>The lesson that stuck with me afterward was that a feature working in a demo versus production are two different problems altogether, and I did not understand that gap until I hit it myself.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="bite-right" data-node="Bite Right" data-teaser="Flagging allergens before you take a bite">
+        <div class="kicker">What I'm building now</div>
+        <h2>Bite Right</h2>
+        <div class="card">
+          <p>Bite Right came out of watching friends and family ask a waiter the same questions at every meal — &ldquo;Are there peanuts in this?&rdquo; or &ldquo;Is there any dairy in the sauce?&rdquo; — and hope the answer was right. Often the staff didn't actually know what was in the sauces or marinades. Eating out on a restricted diet shouldn't come with that much uncertainty.</p>
+          <p>Food item detector for allergic people prior to consumption. Upload an image of the food product or label, and Bite Right analyzes it for you, giving you an output of everything you should avoid according to your conditions without having to go through the label yourself. The current detection success rate is 95%.</p>
+
+          <video class="demo-video" controls muted playsinline preload="metadata"
+                 poster="biteright-poster.jpg" aria-label="Bite Right demo: uploading a food photo and getting an allergen check">
+            <source src="biteright-demo.mp4" type="video/mp4">
+            <a href="biteright-demo.mp4">Download the Bite Right demo video</a>.
+          </video>
+          <p class="note">~35-second walkthrough: upload a food photo → Bite Right checks it against your restrictions → flags what's risky.</p>
+
+          <div class="callout ask">
+            <div class="label">What would move this forward</div>
+            <p>The current version runs on rule-based detection logic. The next step is training a proper model to get more accurate and handle a wider range of foods and restrictions — that's what I'm working on now.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="other" data-node="Other builds" data-teaser="Coach Connect, Github_PRReview, ApplicationBot">
+        <div class="kicker">Other builds</div>
+        <h2>More of what I've made</h2>
+
+        <div class="build-row">
+          <div>
+            <h3>Coach Connect</h3>
+            <p>A UMD marketplace pairing students with student-athletes for affordable, sport-specific coaching. Built the backend, MongoDB schema, and UMD SSO auth to support 40,000+ students.</p>
+            <p class="lesson"><b>What I learned:</b> I first modeled coaches and students as two separate collections, so every booking meant stitching data across both and the queries got ugly fast. Collapsing them into one profile model with a role field made the whole app simpler — I now sketch the core data model before writing endpoints, not after.</p>
+          </div>
+          <a class="link" href="https://github.com/Open-Sourcery-UMD/coachconnect" target="_blank" rel="noopener">View on GitHub</a>
+        </div>
+
+        <div class="build-row">
+          <div>
+            <h3>Github_PRReview</h3>
+            <p>A code-change-risk agent: builds an import graph for a repo, scores how far a pull request's changes could ripple, and uses an LLM to separate real dead code from false positives. Built for a Palantir AIP submission.</p>
+            <p class="lesson"><b>What I learned:</b> the pure static import-graph pass flagged tons of "dead" code that wasn't — dynamic imports, reflection, framework entry points. The graph alone wasn't trustworthy. Layering an LLM verification step on top of it was what made the output something a reviewer would actually act on, and it changed how I think about when to reach for static analysis vs. a model.</p>
+          </div>
+          <a class="link" href="https://github.com/Parth-2025/Github_PRReview" target="_blank" rel="noopener">View on GitHub</a>
+        </div>
+
+        <div class="build-row">
+          <div>
+            <h3>ApplicationBot</h3>
+            <p>An internship application tracker that moves postings through a pipeline — new, tailored, applied, outcome — with a React front end over a Python backend.</p>
+          </div>
+          <a class="link" href="https://github.com/Parth-2025/ApplicationBot" target="_blank" rel="noopener">View on GitHub</a>
+        </div>
+      </section>
+
+      <footer id="contact" data-node="Contact" data-teaser="Reach out">
+        <h2>Get in touch</h2>
+        <p class="outro">
+          I'm always happy to talk about ML systems, computer vision, or whatever you're building. If something here caught your eye — or you want a second pair of hands wiring a model into a real product — reach out.
+        </p>
+        <div class="contact-icons">
+          <a class="icon-btn" href="https://github.com/Parth-2025" target="_blank" rel="noopener" aria-label="GitHub">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.2c0 4.5 2.87 8.32 6.84 9.67.5.1.68-.22.68-.49v-1.71c-2.78.62-3.37-1.36-3.37-1.36-.46-1.2-1.11-1.52-1.11-1.52-.91-.64.07-.63.07-.63 1 .07 1.53 1.05 1.53 1.05.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.73 0 0 .84-.27 2.75 1.05a9.3 9.3 0 0 1 5 0c1.9-1.32 2.74-1.05 2.74-1.05.56 1.42.21 2.47.11 2.73.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.79-4.57 5.05.36.32.68.94.68 1.9v2.82c0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.2C22 6.58 17.52 2 12 2Z"/></svg>
+          </a>
+          <a class="icon-btn" href="https://www.linkedin.com/in/parth-mohan/" target="_blank" rel="noopener" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.94 8.5H3.56V20H6.94V8.5ZM5.25 3.2A1.96 1.96 0 1 0 5.28 7.1A1.96 1.96 0 0 0 5.25 3.2ZM20.45 20H17.08V14c0-1.44-.03-3.3-2.01-3.3-2.02 0-2.33 1.58-2.33 3.2V20H9.36V8.5h3.24v1.57h.05c.45-.85 1.56-1.75 3.21-1.75 3.43 0 4.06 2.26 4.06 5.2V20Z"/></svg>
+          </a>
+          <a class="icon-btn" href="mailto:parthmohan2006@gmail.com" aria-label="Email">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 2v.4l8 5.6 8-5.6V6H4Zm16 12V8.9l-7.4 5.18a1 1 0 0 1-1.2 0L4 8.9V18h16Z"/></svg>
+          </a>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ================= Particle network background ================= */
+  var canvas = document.getElementById('particleCanvas');
+  var ctx = canvas.getContext('2d');
+  var W, Hpx, particles = [];
+  var mouse = { x:-9999, y:-9999 };
+
+  function resizeCanvas(){
+    W = canvas.width = window.innerWidth;
+    Hpx = canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', function(){
+    resizeCanvas();
+    initParticles();
+  });
+
+  function initParticles(){
+    var count = Math.min(90, Math.round((W * Hpx) / 22000));
+    particles = [];
+    for (var i = 0; i < count; i++){
+      particles.push({
+        x: Math.random() * W,
+        y: Math.random() * Hpx,
+        vx: (Math.random() - 0.5) * 0.25,
+        vy: (Math.random() - 0.5) * 0.25
+      });
+    }
+  }
+  initParticles();
+
+  window.addEventListener('mousemove', function(e){
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  }, { passive:true });
+  window.addEventListener('mouseleave', function(){
+    mouse.x = -9999; mouse.y = -9999;
+  });
+
+  var LINK_DIST = 145;
+  var REPEL_DIST = 175;
+  var CURSOR_DIST = 240;   // reach of the interactive web that follows the cursor
+  var MAXV = 2.6;
+
+  function stepParticles(){
+    ctx.clearRect(0, 0, W, Hpx);
+
+    var mActive = mouse.x > -9998;
+
+    for (var i = 0; i < particles.length; i++){
+      var p = particles[i];
+      var dx = p.x - mouse.x, dy = p.y - mouse.y;
+      var dist = Math.sqrt(dx*dx + dy*dy);
+
+      if (!reduceMotion){
+        if (mActive && dist < REPEL_DIST && dist > 0.01){
+          var force = (REPEL_DIST - dist) / REPEL_DIST;
+          // push away from the cursor
+          p.vx += (dx / dist) * force * 0.16;
+          p.vy += (dy / dist) * force * 0.16;
+          // + a little swirl so the field visibly stirs
+          p.vx += (-dy / dist) * force * 0.06;
+          p.vy += ( dx / dist) * force * 0.06;
+        }
+        p.vx *= 0.955;
+        p.vy *= 0.955;
+        var sp = Math.sqrt(p.vx*p.vx + p.vy*p.vy);
+        if (sp > MAXV){ p.vx = p.vx / sp * MAXV; p.vy = p.vy / sp * MAXV; }
+        p.x += p.vx;
+        p.y += p.vy;
+      }
+
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = Hpx; if (p.y > Hpx) p.y = 0;
+
+      // particles near the cursor brighten and grow
+      var near = mActive ? Math.max(0, 1 - dist / CURSOR_DIST) : 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 1.6 + near * 3, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(60,110,113,' + (0.32 + near * 0.55) + ')';
+      ctx.fill();
+
+      // line tying each near particle back to the cursor
+      if (near > 0){
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(mouse.x, mouse.y);
+        ctx.strokeStyle = 'rgba(60,110,113,' + (0.33 * near) + ')';
+        ctx.lineWidth = 1.1;
+        ctx.stroke();
+      }
+    }
+
+    for (var a = 0; a < particles.length; a++){
+      for (var b = a + 1; b < particles.length; b++){
+        var pa = particles[a], pb = particles[b];
+        var ddx = pa.x - pb.x, ddy = pa.y - pb.y;
+        var d = Math.sqrt(ddx*ddx + ddy*ddy);
+        if (d < LINK_DIST){
+          ctx.beginPath();
+          ctx.moveTo(pa.x, pa.y);
+          ctx.lineTo(pb.x, pb.y);
+          ctx.strokeStyle = 'rgba(120,128,130,' + (0.5 * (1 - d / LINK_DIST)) + ')';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+    }
+
+    requestAnimationFrame(stepParticles);
+  }
+  requestAnimationFrame(stepParticles);
+
+  /* ================= Scroll progress (mobile) ================= */
+  var progressRail = document.getElementById('progressRail');
+
+  /* ================= Helix ================= */
+  var strandFront = document.getElementById('strandFront');
+  var strandBack = document.getElementById('strandBack');
+  var rungsG = document.getElementById('rungs');
+  var nodesG = document.getElementById('nodes');
+  var captionTitle = document.getElementById('captionTitle');
+  var captionTeaser = document.getElementById('captionTeaser');
+
+  var H = 820, STEP = 16, AMP = 125, FREQ = 0.013, CX = 150;
+
+  function strandPath(phase){
+    var d = '';
+    for (var y = 0; y <= H; y += STEP){
+      var x = CX + AMP * Math.sin(y * FREQ + phase);
+      d += (y === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y + ' ';
+    }
+    return d;
+  }
+  function xAt(y, phase){ return CX + AMP * Math.sin(y * FREQ + phase); }
+
+  var RUNG_COUNT = 22;
+  var rungEls = [];
+  for (var i = 0; i <= RUNG_COUNT; i++){
+    var line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('class','rung');
+    rungsG.appendChild(line);
+    rungEls.push(line);
+  }
+
+  var markers = Array.prototype.slice.call(document.querySelectorAll('[data-node]'));
+  var nodeEls = markers.map(function(el){
+    var c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('class','node');
+    c.setAttribute('r','9');
+    nodesG.appendChild(c);
+    return { circle:c, el:el, t:0, label:el.getAttribute('data-node'), teaser:el.getAttribute('data-teaser') || '' };
+  });
+
+  function recomputeNodePositions(){
+    var docH = document.documentElement.scrollHeight - window.innerHeight;
+    if (docH <= 0) docH = 1;
+    nodeEls.forEach(function(n){
+      var top = n.el.getBoundingClientRect().top + window.scrollY;
+      n.t = Math.max(0, Math.min(1, top / docH));
+    });
+  }
+
+  var currentActive = -1;
+  function setCaption(n){
+    captionTitle.style.opacity = 0;
+    captionTeaser.style.opacity = 0;
+    setTimeout(function(){
+      captionTitle.textContent = n.label;
+      captionTeaser.textContent = n.teaser;
+      captionTitle.style.opacity = 1;
+      captionTeaser.style.opacity = 1;
+    }, 160);
+  }
+
+  function updateHelix(){
+    var scrollY = window.scrollY;
+    var docH = document.documentElement.scrollHeight - window.innerHeight;
+    if (docH <= 0) docH = 1;
+    var progress = Math.max(0, Math.min(1, scrollY / docH));
+
+    if (progressRail) progressRail.style.width = (progress * 100) + '%';
+    if (window.innerWidth <= 1080) return;
+
+    var phase = reduceMotion ? 0 : scrollY * 0.004;
+
+    strandFront.setAttribute('d', strandPath(phase));
+    strandBack.setAttribute('d', strandPath(phase + Math.PI));
+
+    for (var i = 0; i < rungEls.length; i++){
+      var y = (i / RUNG_COUNT) * H;
+      var x1 = xAt(y, phase), x2 = xAt(y, phase + Math.PI);
+      rungEls[i].setAttribute('x1', x1.toFixed(1));
+      rungEls[i].setAttribute('y1', y.toFixed(1));
+      rungEls[i].setAttribute('x2', x2.toFixed(1));
+      rungEls[i].setAttribute('y2', y.toFixed(1));
+    }
+
+    var newActive = -1;
+    for (var j = 0; j < nodeEls.length; j++){
+      if (nodeEls[j].t <= progress + 0.06) newActive = j;
+    }
+
+    nodeEls.forEach(function(n, idx){
+      var y = n.t * H;
+      var x = xAt(y, phase);
+      var isBack = Math.sin(y * FREQ + phase) < 0;
+      n.circle.setAttribute('cx', x.toFixed(1));
+      n.circle.setAttribute('cy', y.toFixed(1));
+      n.circle.setAttribute('r', idx === newActive ? 14 : (isBack ? 6 : 9));
+      n.circle.classList.toggle('active', idx === newActive);
+    });
+
+    if (newActive !== currentActive && newActive >= 0){
+      currentActive = newActive;
+      setCaption(nodeEls[newActive]);
+    }
+  }
+
+  var ticking = false;
+  function onScroll(){
+    if (!ticking){
+      window.requestAnimationFrame(function(){ updateHelix(); ticking = false; });
+      ticking = true;
+    }
+  }
+  window.addEventListener('scroll', onScroll, { passive:true });
+  window.addEventListener('resize', function(){ recomputeNodePositions(); updateHelix(); });
+  window.addEventListener('load', function(){ recomputeNodePositions(); updateHelix(); });
+
+  recomputeNodePositions();
+  updateHelix();
+})();
+</script>
+
+</body>
+</html>
