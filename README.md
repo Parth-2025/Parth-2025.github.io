@@ -19,7 +19,7 @@ python3 -m http.server 8000
 
 ## Contents
 
-- `index.html` — the whole site (inline CSS + JS, particle background, scroll-driven helix timeline)
+- `index.html` — the whole site (inline CSS + JS, particle background, interactive project constellation)
 - `profile.jpg` — headshot
 - `kinetiq-demo.mp4` / `kinetiq-poster.jpg` — KinetiQ demo
 - `biteright-demo.mp4` / `biteright-poster.jpg` — Bite Right demo

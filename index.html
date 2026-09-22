@@ -49,12 +49,6 @@
 
   .page{ position:relative; z-index:1; }
 
-  /* ---------- Mobile scroll progress ---------- */
-  .progress-rail{
-    position:fixed; top:0; left:0; height:3px; width:0%;
-    background:var(--teal); z-index:60; transition:width 0.05s linear;
-  }
-
   /* ---------- Top bar ---------- */
   header.top{
     display:flex; justify-content:space-between; align-items:center;
@@ -92,39 +86,47 @@
   .icon-btn:hover{ background:var(--teal); border-color:var(--teal); color:var(--white); }
   .icon-btn svg{ width:18px; height:18px; }
 
-  /* ---------- Layout: sticky helix + content ---------- */
-  .layout{
-    max-width:var(--maxw); margin:0 auto; padding:0 var(--pad-x) 40px;
-    display:grid; justify-content:center;
-    grid-template-columns:clamp(240px, 19vw, 340px) minmax(0, 1120px);
-    gap:clamp(26px, 3vw, 52px);
-  }
-  .helix-col{
-    position:sticky; top:0; height:100vh; align-self:start;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-  }
-  .helix-col svg{ width:100%; height:82%; display:block; }
-  .helix-col .strand{ fill:none; stroke-width:4; }
-  .helix-col .strand-front{ stroke:var(--teal); }
-  .helix-col .strand-back{ stroke:var(--grey); }
-  .helix-col .rung{ stroke:var(--grey); stroke-width:1.8; }
-  .helix-col .node{ fill:var(--grey); stroke:var(--white); stroke-width:2; transition:r 0.25s ease, fill 0.25s ease; }
-  .helix-col .node.active{ fill:var(--navy); }
-
-  .now-caption{ text-align:center; margin-top:6px; min-height:64px; }
-  .now-caption .eyebrow{ font-size:12px; color:var(--teal); font-weight:600; margin-bottom:4px; }
-  .now-caption .title{ font-size:19px; font-weight:700; transition:opacity 0.2s ease; }
-  .now-caption .teaser{ font-size:13.5px; color:var(--charcoal); opacity:0.65; margin-top:3px; transition:opacity 0.2s ease; }
-
-  @media (max-width:1080px){
-    .layout{ grid-template-columns:1fr; }
-    .helix-col{ display:none; }
+  /* ---------- Project constellation ---------- */
+  .page{ min-height:100vh; display:flex; flex-direction:column; }
+  header.top{ width:100%; }
+  .hero{ width:100%; padding:18px var(--pad-x) 26px; }
+  .avatar-wrap{ margin-bottom:14px; }
+  .avatar,.avatar-fallback{ width:104px; height:104px; }
+  .avatar-fallback{ font-size:30px; }
+  .hero p.sub{ margin-top:0; max-width:72ch; }
+  .hero .contact-icons{ margin-top:15px; }
+  .layout{ width:100%; max-width:var(--maxw); margin:0 auto; padding:0 var(--pad-x) 32px; display:grid; grid-template-columns:minmax(310px, 0.85fr) minmax(0, 1.15fr); gap:clamp(20px,3vw,44px); flex:1; min-height:0; }
+  .constellation-col,.content-col{ min-height:0; height:clamp(460px,calc(100vh - 290px),860px); }
+  .constellation-col{ position:relative; overflow:hidden; border:1px solid var(--grey); border-radius:18px; background:rgba(255,255,255,.66); box-shadow:var(--shadow); }
+  .constellation-col::before{ content:''; position:absolute; inset:0; pointer-events:none; background:radial-gradient(circle at 50% 48%,rgba(60,110,113,.12),transparent 48%); }
+  .constellation-lines{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  .constellation-lines line{ stroke:rgba(60,110,113,.28); stroke-width:1.4; transition:stroke .3s,stroke-width .3s; }
+  .constellation-lines line.active{ stroke:var(--teal); stroke-width:2.5; }
+  .constellation-center{ position:absolute; left:50%; top:49%; transform:translate(-50%,-50%); width:112px; height:112px; border-radius:50%; background:var(--navy); color:white; display:grid; place-items:center; text-align:center; font-size:13px; font-weight:700; letter-spacing:.02em; box-shadow:0 0 0 10px rgba(40,75,99,.08),0 12px 30px rgba(40,75,99,.18); z-index:2; }
+  .constellation-node{ position:absolute; transform:translate(-50%,-50%); z-index:3; border:1px solid rgba(60,110,113,.35); border-radius:999px; background:var(--white); color:var(--charcoal); padding:11px 17px; font:600 13px/1.2 'Inter',sans-serif; white-space:nowrap; cursor:pointer; box-shadow:var(--shadow); transition:transform .25s,background .25s,color .25s,box-shadow .25s; }
+  .constellation-node:hover,.constellation-node:focus-visible{ transform:translate(-50%,-50%) scale(1.08); box-shadow:0 8px 25px rgba(40,75,99,.17); }
+  .constellation-node.active{ background:var(--teal); color:white; border-color:var(--teal); box-shadow:0 0 0 7px rgba(60,110,113,.12),0 8px 24px rgba(40,75,99,.18); }
+  .constellation-hint{ position:absolute; bottom:18px; left:20px; right:20px; text-align:center; color:var(--charcoal); opacity:.65; font-size:12px; }
+  .content-col{ overflow-y:auto; overscroll-behavior:contain; border:1px solid var(--grey); border-radius:18px; background:rgba(255,255,255,.82); box-shadow:var(--shadow); scrollbar-color:var(--grey) transparent; }
+  .content-col > section,.content-col > footer{ display:none; padding:clamp(24px,3vw,42px); border:0; animation:panelIn .35s ease both; }
+  .content-col > .active{ display:block; }
+  .content-col .card{ box-shadow:none; }
+  .panel-counter{ color:var(--teal); font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; margin-bottom:12px; }
+  @keyframes panelIn{ from{opacity:0;transform:translateY(9px)} to{opacity:1;transform:none} }
+  @media (max-width:900px){
+    .layout{ grid-template-columns:1fr; gap:16px; }
+    .constellation-col{ height:320px; }
+    .content-col{ height:auto; min-height:430px; max-height:none; overflow:visible; }
+    .constellation-center{ width:86px; height:86px; font-size:11px; }
+    .constellation-node{ padding:8px 11px; font-size:11px; }
   }
   @media (max-width:560px){
     nav.links{ gap:10px 16px; }
     nav.links a{ font-size:13px; }
     .mark{ font-size:16px; }
-    .hero h1{ font-size:clamp(25px,7.5vw,34px); }
+    .hero p.sub{ font-size:14px; }
+    .constellation-col{ height:300px; }
+    .constellation-node{ font-size:10px; padding:7px 9px; }
     .build-row{ flex-direction:column; gap:8px; }
     .build-row .link{ align-self:flex-start; }
     .phase{ flex:1 1 100%; border-right:none; border-bottom:1px solid var(--grey); }
@@ -211,13 +213,13 @@
 
   @media (prefers-reduced-motion: reduce){
     html{ scroll-behavior:auto; }
+    .content-col > section,.content-col > footer,.constellation-node,.constellation-lines line{ animation:none; transition:none; }
   }
 </style>
 </head>
 <body>
 
 <canvas id="particleCanvas" aria-hidden="true"></canvas>
-<div class="progress-rail" id="progressRail" aria-hidden="true"></div>
 
 <div class="page">
 
@@ -254,23 +256,20 @@
 
   <div class="layout">
 
-    <div class="helix-col">
-      <svg viewBox="0 0 300 820" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-        <path class="strand strand-back" id="strandBack"></path>
-        <g id="rungs"></g>
-        <path class="strand strand-front" id="strandFront"></path>
-        <g id="nodes"></g>
-      </svg>
-      <div class="now-caption">
-        <div class="eyebrow">Now showing</div>
-        <div class="title" id="captionTitle">My journey</div>
-        <div class="teaser" id="captionTeaser">Scroll to turn the timeline</div>
-      </div>
+    <div class="constellation-col" aria-label="Explore the portfolio">
+      <svg class="constellation-lines" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true"></svg>
+      <div class="constellation-center">PARTH<br>MOHAN</div>
+      <button class="constellation-node active" style="left:24%;top:21%" data-target="journey" aria-controls="journey" aria-pressed="true">Journey</button>
+      <button class="constellation-node" style="left:76%;top:19%" data-target="kinetiq" aria-controls="kinetiq" aria-pressed="false">KinetiQ</button>
+      <button class="constellation-node" style="left:83%;top:49%" data-target="bite-right" aria-controls="bite-right" aria-pressed="false">Bite Right</button>
+      <button class="constellation-node" style="left:72%;top:79%" data-target="other" aria-controls="other" aria-pressed="false">Other builds</button>
+      <button class="constellation-node" style="left:23%;top:78%" data-target="contact" aria-controls="contact" aria-pressed="false">Contact</button>
+      <div class="constellation-hint">Select a node to explore · Use arrow keys to move</div>
     </div>
 
     <div class="content-col">
 
-      <section id="journey" data-node="My journey" data-teaser="Where the builder habit started">
+      <section class="active" id="journey" data-node="My journey" data-teaser="Where the builder habit started">
         <h2>My journey</h2>
         <div class="timeline">
           <div class="tl-item" data-node="Simcoach Games" data-teaser="Led 8 engineers through a full Unity SDLC">
@@ -534,125 +533,53 @@
   }
   requestAnimationFrame(stepParticles);
 
-  /* ================= Scroll progress (mobile) ================= */
-  var progressRail = document.getElementById('progressRail');
-
-  /* ================= Helix ================= */
-  var strandFront = document.getElementById('strandFront');
-  var strandBack = document.getElementById('strandBack');
-  var rungsG = document.getElementById('rungs');
-  var nodesG = document.getElementById('nodes');
-  var captionTitle = document.getElementById('captionTitle');
-  var captionTeaser = document.getElementById('captionTeaser');
-
-  var H = 820, STEP = 16, AMP = 125, FREQ = 0.013, CX = 150;
-
-  function strandPath(phase){
-    var d = '';
-    for (var y = 0; y <= H; y += STEP){
-      var x = CX + AMP * Math.sin(y * FREQ + phase);
-      d += (y === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y + ' ';
-    }
-    return d;
-  }
-  function xAt(y, phase){ return CX + AMP * Math.sin(y * FREQ + phase); }
-
-  var RUNG_COUNT = 22;
-  var rungEls = [];
-  for (var i = 0; i <= RUNG_COUNT; i++){
-    var line = document.createElementNS('http://www.w3.org/2000/svg','line');
-    line.setAttribute('class','rung');
-    rungsG.appendChild(line);
-    rungEls.push(line);
-  }
-
-  var markers = Array.prototype.slice.call(document.querySelectorAll('[data-node]'));
-  var nodeEls = markers.map(function(el){
-    var c = document.createElementNS('http://www.w3.org/2000/svg','circle');
-    c.setAttribute('class','node');
-    c.setAttribute('r','9');
-    nodesG.appendChild(c);
-    return { circle:c, el:el, t:0, label:el.getAttribute('data-node'), teaser:el.getAttribute('data-teaser') || '' };
+  /* ================= Constellation navigation ================= */
+  var nodes = Array.prototype.slice.call(document.querySelectorAll('.constellation-node'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('.content-col > section, .content-col > footer'));
+  var lines = document.querySelector('.constellation-lines');
+  var content = document.querySelector('.content-col');
+  var ns = 'http://www.w3.org/2000/svg';
+  nodes.forEach(function(node, index){
+    var line = document.createElementNS(ns, 'line');
+    line.setAttribute('x1','50%'); line.setAttribute('y1','49%');
+    line.setAttribute('x2', node.style.left); line.setAttribute('y2', node.style.top);
+    if(index === 0) line.classList.add('active');
+    lines.appendChild(line);
+    node.addEventListener('click', function(){ activate(index, true); if(window.innerWidth <= 900) content.scrollIntoView({behavior:reduceMotion?'instant':'smooth'}); });
+    node.addEventListener('keydown', function(event){
+      if(event.key !== 'ArrowRight' && event.key !== 'ArrowDown' && event.key !== 'ArrowLeft' && event.key !== 'ArrowUp') return;
+      event.preventDefault();
+      var direction = (event.key === 'ArrowRight' || event.key === 'ArrowDown') ? 1 : -1;
+      var next = (index + direction + nodes.length) % nodes.length;
+      nodes[next].focus(); activate(next, true);
+    });
   });
-
-  function recomputeNodePositions(){
-    var docH = document.documentElement.scrollHeight - window.innerHeight;
-    if (docH <= 0) docH = 1;
-    nodeEls.forEach(function(n){
-      var top = n.el.getBoundingClientRect().top + window.scrollY;
-      n.t = Math.max(0, Math.min(1, top / docH));
+  function activate(index, updateHash){
+    nodes.forEach(function(node,i){
+      var selected = i === index;
+      node.classList.toggle('active', selected);
+      node.setAttribute('aria-pressed', String(selected));
+      lines.children[i].classList.toggle('active', selected);
+      panels[i].classList.toggle('active', selected);
+      panels[i].setAttribute('aria-hidden', String(!selected));
     });
+    content.scrollTop = 0;
+    if(updateHash) history.replaceState(null, '', '#' + nodes[index].dataset.target);
   }
-
-  var currentActive = -1;
-  function setCaption(n){
-    captionTitle.style.opacity = 0;
-    captionTeaser.style.opacity = 0;
-    setTimeout(function(){
-      captionTitle.textContent = n.label;
-      captionTeaser.textContent = n.teaser;
-      captionTitle.style.opacity = 1;
-      captionTeaser.style.opacity = 1;
-    }, 160);
-  }
-
-  function updateHelix(){
-    var scrollY = window.scrollY;
-    var docH = document.documentElement.scrollHeight - window.innerHeight;
-    if (docH <= 0) docH = 1;
-    var progress = Math.max(0, Math.min(1, scrollY / docH));
-
-    if (progressRail) progressRail.style.width = (progress * 100) + '%';
-    if (window.innerWidth <= 1080) return;
-
-    var phase = reduceMotion ? 0 : scrollY * 0.004;
-
-    strandFront.setAttribute('d', strandPath(phase));
-    strandBack.setAttribute('d', strandPath(phase + Math.PI));
-
-    for (var i = 0; i < rungEls.length; i++){
-      var y = (i / RUNG_COUNT) * H;
-      var x1 = xAt(y, phase), x2 = xAt(y, phase + Math.PI);
-      rungEls[i].setAttribute('x1', x1.toFixed(1));
-      rungEls[i].setAttribute('y1', y.toFixed(1));
-      rungEls[i].setAttribute('x2', x2.toFixed(1));
-      rungEls[i].setAttribute('y2', y.toFixed(1));
-    }
-
-    var newActive = -1;
-    for (var j = 0; j < nodeEls.length; j++){
-      if (nodeEls[j].t <= progress + 0.06) newActive = j;
-    }
-
-    nodeEls.forEach(function(n, idx){
-      var y = n.t * H;
-      var x = xAt(y, phase);
-      var isBack = Math.sin(y * FREQ + phase) < 0;
-      n.circle.setAttribute('cx', x.toFixed(1));
-      n.circle.setAttribute('cy', y.toFixed(1));
-      n.circle.setAttribute('r', idx === newActive ? 14 : (isBack ? 6 : 9));
-      n.circle.classList.toggle('active', idx === newActive);
+  document.querySelectorAll('nav.links a').forEach(function(link){
+    link.addEventListener('click', function(event){
+      var index = nodes.findIndex(function(node){ return '#' + node.dataset.target === link.getAttribute('href'); });
+      if(index < 0) return;
+      event.preventDefault(); activate(index, true);
+      if(window.innerWidth <= 900) content.scrollIntoView({behavior:reduceMotion?'instant':'smooth'});
     });
-
-    if (newActive !== currentActive && newActive >= 0){
-      currentActive = newActive;
-      setCaption(nodeEls[newActive]);
-    }
+  });
+  function activateHash(){
+    var index = nodes.findIndex(function(node){ return '#' + node.dataset.target === window.location.hash; });
+    activate(index < 0 ? 0 : index, false);
   }
-
-  var ticking = false;
-  function onScroll(){
-    if (!ticking){
-      window.requestAnimationFrame(function(){ updateHelix(); ticking = false; });
-      ticking = true;
-    }
-  }
-  window.addEventListener('scroll', onScroll, { passive:true });
-  window.addEventListener('resize', function(){ recomputeNodePositions(); updateHelix(); });
-  window.addEventListener('load', function(){ recomputeNodePositions(); updateHelix(); });
-
-  recomputeNodePositions();
-  updateHelix();
+  window.addEventListener('hashchange', activateHash);
+  activateHash();
 })();
 </script>
 
