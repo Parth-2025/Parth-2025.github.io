@@ -86,7 +86,7 @@
   .icon-btn:hover{ background:var(--teal); border-color:var(--teal); color:var(--white); }
   .icon-btn svg{ width:18px; height:18px; }
 
-  /* ---------- Project constellation ---------- */
+  /* ---------- 3D project orbit ---------- */
   .page{ min-height:100vh; display:flex; flex-direction:column; }
   header.top{ width:100%; }
   .hero{ width:100%; padding:18px var(--pad-x) 26px; }
@@ -95,44 +95,39 @@
   .avatar-fallback{ font-size:30px; }
   .hero p.sub{ margin-top:0; max-width:72ch; }
   .hero .contact-icons{ margin-top:15px; }
-  .layout{ width:100%; max-width:var(--maxw); margin:0 auto; padding:0 var(--pad-x) 32px; display:grid; grid-template-columns:minmax(310px, 0.85fr) minmax(0, 1.15fr); gap:clamp(20px,3vw,44px); flex:1; min-height:0; }
-  .constellation-col,.content-col{ min-height:0; height:clamp(460px,calc(100vh - 290px),860px); }
-  .constellation-col{ position:relative; overflow:hidden; border:1px solid var(--grey); border-radius:18px; background:rgba(255,255,255,.66); box-shadow:var(--shadow); }
-  .constellation-col::before{ content:''; position:absolute; inset:0; pointer-events:none; background:radial-gradient(circle at 50% 48%,rgba(60,110,113,.12),transparent 48%); }
-  .constellation-lines{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
-  .constellation-lines line{ stroke:rgba(60,110,113,.28); stroke-width:1.4; transition:stroke .3s,stroke-width .3s; }
-  .constellation-lines line.active{ stroke:var(--teal); stroke-width:2.5; }
-  .constellation-center{ position:absolute; left:50%; top:49%; transform:translate(-50%,-50%); width:112px; height:112px; border-radius:50%; background:var(--navy); color:white; display:grid; place-items:center; text-align:center; font-size:13px; font-weight:700; letter-spacing:.02em; box-shadow:0 0 0 10px rgba(40,75,99,.08),0 12px 30px rgba(40,75,99,.18); z-index:2; }
-  .constellation-node{ position:absolute; transform:translate(-50%,-50%); z-index:3; border:1px solid rgba(60,110,113,.35); border-radius:999px; background:var(--white); color:var(--charcoal); padding:11px 17px; font:600 13px/1.2 'Inter',sans-serif; white-space:nowrap; cursor:pointer; box-shadow:var(--shadow); transition:transform .25s,background .25s,color .25s,box-shadow .25s; }
-  .constellation-node:hover,.constellation-node:focus-visible{ transform:translate(-50%,-50%) scale(1.08); box-shadow:0 8px 25px rgba(40,75,99,.17); }
-  .constellation-node.active{ background:var(--teal); color:white; border-color:var(--teal); box-shadow:0 0 0 7px rgba(60,110,113,.12),0 8px 24px rgba(40,75,99,.18); }
-  .constellation-hint{ position:absolute; bottom:18px; left:20px; right:20px; text-align:center; color:var(--charcoal); opacity:.65; font-size:12px; }
-  .content-col{ overflow-y:auto; overscroll-behavior:contain; border:1px solid var(--grey); border-radius:18px; background:rgba(255,255,255,.82); box-shadow:var(--shadow); scrollbar-color:var(--grey) transparent; }
+  .layout{ width:100%; max-width:var(--maxw); margin:0 auto; padding:0 var(--pad-x) 32px; display:grid; grid-template-columns:minmax(350px,.95fr) minmax(0,1.05fr); gap:clamp(20px,3vw,44px); flex:1; min-height:0; }
+  .orbit-col,.content-col{ min-height:0; height:clamp(470px,calc(100vh - 290px),860px); }
+  .orbit-col{ position:relative; overflow:hidden; border:1px solid rgba(40,75,99,.18); border-radius:24px; background:linear-gradient(145deg,rgba(255,255,255,.82),rgba(227,235,232,.68)); box-shadow:var(--shadow),inset 0 1px 0 white; perspective:900px; cursor:grab; touch-action:pan-y; user-select:none; }
+  .orbit-col.dragging{ cursor:grabbing; }
+  .orbit-col::before{ content:''; position:absolute; inset:-20%; background:radial-gradient(circle at 50% 47%,rgba(60,110,113,.19),transparent 27%),radial-gradient(circle at 72% 24%,rgba(40,75,99,.09),transparent 22%); pointer-events:none; }
+  .orbit-grid{ position:absolute; inset:0; opacity:.26; background-image:linear-gradient(rgba(40,75,99,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(40,75,99,.1) 1px,transparent 1px); background-size:34px 34px; mask-image:radial-gradient(circle,black,transparent 72%); transform:perspective(500px) rotateX(62deg) scale(1.45) translateY(29%); }
+  .orbit-scene{ position:absolute; inset:0; transform-style:preserve-3d; }
+  .orbit-ring{ position:absolute; left:50%; top:48%; width:78%; aspect-ratio:1; border:1px solid rgba(60,110,113,.35); border-radius:50%; transform:translate(-50%,-50%) rotateX(68deg) rotateZ(-10deg); box-shadow:0 0 24px rgba(60,110,113,.08),inset 0 0 22px rgba(60,110,113,.06); pointer-events:none; }
+  .orbit-ring.r2{ width:57%; border-style:dashed; transform:translate(-50%,-50%) rotateX(66deg) rotateZ(24deg); }
+  .orbit-ring.r3{ width:36%; border-color:rgba(40,75,99,.28); transform:translate(-50%,-50%) rotateX(72deg) rotateZ(-35deg); }
+  .core-shell{ position:absolute; left:50%; top:48%; width:126px; height:126px; transform:translate(-50%,-50%); border-radius:50%; display:grid; place-items:center; z-index:40; background:radial-gradient(circle at 35% 28%,#547b8d 0,#284b63 44%,#172f40 100%); color:white; box-shadow:0 0 0 9px rgba(255,255,255,.72),0 0 0 11px rgba(60,110,113,.18),0 22px 45px rgba(40,75,99,.27),inset -12px -14px 25px rgba(0,0,0,.18),inset 8px 8px 18px rgba(255,255,255,.15); }
+  .core-shell::before,.core-shell::after{ content:''; position:absolute; border-radius:50%; border:1px solid rgba(60,110,113,.38); animation:pulseRing 3.2s ease-out infinite; }
+  .core-shell::before{ inset:-24px; }.core-shell::after{ inset:-42px; animation-delay:1.6s; }
+  .core-label{ text-align:center; font-size:11px; font-weight:700; letter-spacing:.15em; line-height:1.55; text-shadow:0 2px 7px rgba(0,0,0,.25); }
+  .core-label small{ display:block; font-size:8px; opacity:.68; letter-spacing:.22em; }
+  .orbit-node{ position:absolute; left:50%; top:48%; z-index:20; border:0; background:transparent; font:inherit; cursor:pointer; transform-style:preserve-3d; will-change:transform,opacity; }
+  .planet{ position:relative; display:grid; place-items:center; width:clamp(78px,8vw,104px); height:clamp(78px,8vw,104px); border-radius:50%; color:var(--charcoal); background:radial-gradient(circle at 32% 26%,#fff 0,#f7faf8 25%,#cbdad6 68%,#97b4af 100%); border:1px solid rgba(60,110,113,.28); box-shadow:inset -12px -14px 22px rgba(40,75,99,.15),inset 7px 6px 13px rgba(255,255,255,.8),0 15px 30px rgba(40,75,99,.2); transition:box-shadow .25s,background .25s,color .25s; }
+  .planet::after{ content:''; position:absolute; inset:-8px; border:1px solid rgba(60,110,113,.2); border-radius:50%; transform:rotateX(70deg); }
+  .planet-label{ max-width:78px; text-align:center; font-size:11px; font-weight:700; line-height:1.2; }
+  .orbit-node:hover .planet,.orbit-node:focus-visible .planet{ box-shadow:inset -12px -14px 22px rgba(40,75,99,.18),0 0 0 7px rgba(60,110,113,.12),0 16px 35px rgba(40,75,99,.24); }
+  .orbit-node:focus-visible{ outline:none; }.orbit-node:focus-visible .planet{ outline:2px solid var(--navy); outline-offset:6px; }
+  .orbit-node.active .planet{ color:white; background:radial-gradient(circle at 32% 25%,#6c9896,#3c6e71 52%,#284b63 100%); box-shadow:inset -10px -12px 22px rgba(0,0,0,.15),0 0 0 8px rgba(60,110,113,.13),0 0 34px rgba(60,110,113,.42),0 18px 38px rgba(40,75,99,.26); }
+  .orbit-satellite{ position:absolute; width:7px;height:7px;border-radius:50%;background:var(--teal);opacity:.45;box-shadow:0 0 10px var(--teal);pointer-events:none; }
+  .orbit-hud{ position:absolute; left:20px; top:18px; z-index:60; font-size:10px; font-weight:700; letter-spacing:.14em; color:var(--teal); text-transform:uppercase; }
+  .orbit-hud::before{ content:''; display:inline-block; width:7px;height:7px;border-radius:50%;background:var(--teal);margin-right:8px;box-shadow:0 0 9px var(--teal); }
+  .orbit-hint{ position:absolute; bottom:17px; left:20px; right:20px; z-index:60; text-align:center; color:var(--charcoal); opacity:.58; font-size:11px; letter-spacing:.02em; }
+  .content-col{ overflow-y:auto; overscroll-behavior:contain; border:1px solid var(--grey); border-radius:24px; background:rgba(255,255,255,.88); box-shadow:var(--shadow); scrollbar-color:var(--grey) transparent; }
   .content-col > section,.content-col > footer{ display:none; padding:clamp(24px,3vw,42px); border:0; animation:panelIn .35s ease both; }
-  .content-col > .active{ display:block; }
-  .content-col .card{ box-shadow:none; }
-  .panel-counter{ color:var(--teal); font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; margin-bottom:12px; }
+  .content-col > .active{ display:block; }.content-col .card{ box-shadow:none; }
   @keyframes panelIn{ from{opacity:0;transform:translateY(9px)} to{opacity:1;transform:none} }
-  @media (max-width:900px){
-    .layout{ grid-template-columns:1fr; gap:16px; }
-    .constellation-col{ height:320px; }
-    .content-col{ height:auto; min-height:430px; max-height:none; overflow:visible; }
-    .constellation-center{ width:86px; height:86px; font-size:11px; }
-    .constellation-node{ padding:8px 11px; font-size:11px; }
-  }
-  @media (max-width:560px){
-    nav.links{ gap:10px 16px; }
-    nav.links a{ font-size:13px; }
-    .mark{ font-size:16px; }
-    .hero p.sub{ font-size:14px; }
-    .constellation-col{ height:300px; }
-    .constellation-node{ font-size:10px; padding:7px 9px; }
-    .build-row{ flex-direction:column; gap:8px; }
-    .build-row .link{ align-self:flex-start; }
-    .phase{ flex:1 1 100%; border-right:none; border-bottom:1px solid var(--grey); }
-    .phase:last-child{ border-bottom:none; }
-    footer .outro{ text-align:left; }
-  }
+  @keyframes pulseRing{ 0%{opacity:.6;transform:scale(.88)} 70%,100%{opacity:0;transform:scale(1.2)} }
+  @media(max-width:900px){.layout{grid-template-columns:1fr;gap:16px}.orbit-col{height:390px}.content-col{height:auto;min-height:430px;max-height:none;overflow:visible}.core-shell{width:96px;height:96px}.planet{width:74px;height:74px}.orbit-node{top:48%}}
+  @media(max-width:560px){nav.links{gap:10px 16px}nav.links a{font-size:13px}.mark{font-size:16px}.hero p.sub{font-size:14px}.orbit-col{height:340px}.planet{width:62px;height:62px}.planet-label{font-size:9px;max-width:52px}.core-shell{width:82px;height:82px}.core-shell::after{display:none}.build-row{flex-direction:column;gap:8px}.build-row .link{align-self:flex-start}.phase{flex:1 1 100%;border-right:none;border-bottom:1px solid var(--grey)}.phase:last-child{border-bottom:none}footer .outro{text-align:left}}
 
   /* ---------- Sections / cards ---------- */
   section{ padding:clamp(30px,4.5vw,48px) 0; border-top:1px solid var(--grey); }
@@ -213,7 +208,8 @@
 
   @media (prefers-reduced-motion: reduce){
     html{ scroll-behavior:auto; }
-    .content-col > section,.content-col > footer,.constellation-node,.constellation-lines line{ animation:none; transition:none; }
+    .content-col > section,.content-col > footer,.orbit-node,.planet{ animation:none; transition:none; }
+    .core-shell::before,.core-shell::after{ animation:none; }
   }
 </style>
 </head>
@@ -256,15 +252,20 @@
 
   <div class="layout">
 
-    <div class="constellation-col" aria-label="Explore the portfolio">
-      <svg class="constellation-lines" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true"></svg>
-      <div class="constellation-center">PARTH<br>MOHAN</div>
-      <button class="constellation-node active" style="left:24%;top:21%" data-target="journey" aria-controls="journey" aria-pressed="true">Journey</button>
-      <button class="constellation-node" style="left:76%;top:19%" data-target="kinetiq" aria-controls="kinetiq" aria-pressed="false">KinetiQ</button>
-      <button class="constellation-node" style="left:83%;top:49%" data-target="bite-right" aria-controls="bite-right" aria-pressed="false">Bite Right</button>
-      <button class="constellation-node" style="left:72%;top:79%" data-target="other" aria-controls="other" aria-pressed="false">Other builds</button>
-      <button class="constellation-node" style="left:23%;top:78%" data-target="contact" aria-controls="contact" aria-pressed="false">Contact</button>
-      <div class="constellation-hint">Select a node to explore · Use arrow keys to move</div>
+    <div class="orbit-col" aria-label="Explore projects in orbit">
+      <div class="orbit-grid" aria-hidden="true"></div>
+      <div class="orbit-hud">Portfolio system online</div>
+      <div class="orbit-scene">
+        <div class="orbit-ring r1" aria-hidden="true"></div><div class="orbit-ring r2" aria-hidden="true"></div><div class="orbit-ring r3" aria-hidden="true"></div>
+        <div class="core-shell" aria-hidden="true"><div class="core-label">PARTH<br>MOHAN<small>BUILDER</small></div></div>
+        <button class="orbit-node active" data-target="journey" aria-controls="journey" aria-pressed="true"><span class="planet"><span class="planet-label">Journey</span></span></button>
+        <button class="orbit-node" data-target="kinetiq" aria-controls="kinetiq" aria-pressed="false"><span class="planet"><span class="planet-label">KinetiQ</span></span></button>
+        <button class="orbit-node" data-target="bite-right" aria-controls="bite-right" aria-pressed="false"><span class="planet"><span class="planet-label">Bite Right</span></span></button>
+        <button class="orbit-node" data-target="other" aria-controls="other" aria-pressed="false"><span class="planet"><span class="planet-label">Other builds</span></span></button>
+        <button class="orbit-node" data-target="contact" aria-controls="contact" aria-pressed="false"><span class="planet"><span class="planet-label">Contact</span></span></button>
+        <i class="orbit-satellite" style="left:17%;top:33%"></i><i class="orbit-satellite" style="left:81%;top:70%"></i><i class="orbit-satellite" style="left:68%;top:15%"></i>
+      </div>
+      <div class="orbit-hint">Drag or scroll to rotate · Select a world to explore</div>
     </div>
 
     <div class="content-col">
@@ -533,53 +534,55 @@
   }
   requestAnimationFrame(stepParticles);
 
-  /* ================= Constellation navigation ================= */
-  var nodes = Array.prototype.slice.call(document.querySelectorAll('.constellation-node'));
+  /* ================= 3D project orbit ================= */
+  var nodes = Array.prototype.slice.call(document.querySelectorAll('.orbit-node'));
   var panels = Array.prototype.slice.call(document.querySelectorAll('.content-col > section, .content-col > footer'));
-  var lines = document.querySelector('.constellation-lines');
+  var orbit = document.querySelector('.orbit-col');
   var content = document.querySelector('.content-col');
-  var ns = 'http://www.w3.org/2000/svg';
-  nodes.forEach(function(node, index){
-    var line = document.createElementNS(ns, 'line');
-    line.setAttribute('x1','50%'); line.setAttribute('y1','49%');
-    line.setAttribute('x2', node.style.left); line.setAttribute('y2', node.style.top);
-    if(index === 0) line.classList.add('active');
-    lines.appendChild(line);
-    node.addEventListener('click', function(){ activate(index, true); if(window.innerWidth <= 900) content.scrollIntoView({behavior:reduceMotion?'instant':'smooth'}); });
-    node.addEventListener('keydown', function(event){
-      if(event.key !== 'ArrowRight' && event.key !== 'ArrowDown' && event.key !== 'ArrowLeft' && event.key !== 'ArrowUp') return;
-      event.preventDefault();
-      var direction = (event.key === 'ArrowRight' || event.key === 'ArrowDown') ? 1 : -1;
-      var next = (index + direction + nodes.length) % nodes.length;
-      nodes[next].focus(); activate(next, true);
+  var rotation = -2.55, targetRotation = rotation, dragging = false, dragX = 0, dragStart = 0, activeIndex = 0;
+  function renderOrbit(){
+    var radiusX = orbit.clientWidth * (window.innerWidth <= 560 ? .34 : .36);
+    var radiusY = orbit.clientHeight * (window.innerWidth <= 560 ? .22 : .25);
+    nodes.forEach(function(node,index){
+      var angle = rotation + index * Math.PI * 2 / nodes.length;
+      var depth = (Math.sin(angle) + 1) / 2;
+      var x = Math.cos(angle) * radiusX;
+      var y = Math.sin(angle) * radiusY;
+      var scale = .72 + depth * .38;
+      node.style.transform = 'translate(-50%,-50%) translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,'+(depth*150).toFixed(1)+'px) scale('+scale.toFixed(3)+')';
+      node.style.zIndex = String(10 + Math.round(depth * 30));
+      node.style.opacity = String(.52 + depth * .48);
     });
-  });
-  function activate(index, updateHash){
-    nodes.forEach(function(node,i){
-      var selected = i === index;
-      node.classList.toggle('active', selected);
-      node.setAttribute('aria-pressed', String(selected));
-      lines.children[i].classList.toggle('active', selected);
-      panels[i].classList.toggle('active', selected);
-      panels[i].setAttribute('aria-hidden', String(!selected));
-    });
-    content.scrollTop = 0;
-    if(updateHash) history.replaceState(null, '', '#' + nodes[index].dataset.target);
   }
-  document.querySelectorAll('nav.links a').forEach(function(link){
-    link.addEventListener('click', function(event){
-      var index = nodes.findIndex(function(node){ return '#' + node.dataset.target === link.getAttribute('href'); });
-      if(index < 0) return;
-      event.preventDefault(); activate(index, true);
-      if(window.innerWidth <= 900) content.scrollIntoView({behavior:reduceMotion?'instant':'smooth'});
-    });
-  });
-  function activateHash(){
-    var index = nodes.findIndex(function(node){ return '#' + node.dataset.target === window.location.hash; });
-    activate(index < 0 ? 0 : index, false);
+  function animateOrbit(){
+    if(reduceMotion){ rotation=targetRotation; renderOrbit(); return; }
+    var delta = targetRotation - rotation;
+    if(Math.abs(delta) > .001){ rotation += delta * .12; renderOrbit(); requestAnimationFrame(animateOrbit); }
+    else{ rotation = targetRotation; renderOrbit(); }
   }
-  window.addEventListener('hashchange', activateHash);
-  activateHash();
+  function rotateTo(index){
+    var current = targetRotation + index * Math.PI * 2 / nodes.length;
+    var desired = Math.PI / 2;
+    targetRotation += desired - current;
+    animateOrbit();
+  }
+  function activate(index, updateHash, rotate){
+    activeIndex=index;
+    nodes.forEach(function(node,i){var selected=i===index;node.classList.toggle('active',selected);node.setAttribute('aria-pressed',String(selected));panels[i].classList.toggle('active',selected);panels[i].setAttribute('aria-hidden',String(!selected));});
+    content.scrollTop=0;if(rotate!==false)rotateTo(index);if(updateHash)history.replaceState(null,'','#'+nodes[index].dataset.target);
+  }
+  nodes.forEach(function(node,index){
+    node.addEventListener('click',function(){activate(index,true,true);if(window.innerWidth<=900)content.scrollIntoView({behavior:reduceMotion?'auto':'smooth'});});
+    node.addEventListener('keydown',function(event){if(!['ArrowRight','ArrowDown','ArrowLeft','ArrowUp'].includes(event.key))return;event.preventDefault();var d=(event.key==='ArrowRight'||event.key==='ArrowDown')?1:-1;var next=(index+d+nodes.length)%nodes.length;nodes[next].focus();activate(next,true,true);});
+  });
+  orbit.addEventListener('pointerdown',function(e){if(e.target.closest('.orbit-node'))return;dragging=true;dragX=e.clientX;dragStart=targetRotation;orbit.classList.add('dragging');orbit.setPointerCapture(e.pointerId);});
+  orbit.addEventListener('pointermove',function(e){if(!dragging)return;targetRotation=dragStart+(e.clientX-dragX)*.009;rotation=targetRotation;renderOrbit();});
+  orbit.addEventListener('pointerup',function(){dragging=false;orbit.classList.remove('dragging');});
+  orbit.addEventListener('pointercancel',function(){dragging=false;orbit.classList.remove('dragging');});
+  orbit.addEventListener('wheel',function(e){e.preventDefault();targetRotation+=((Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY)>0?-.32:.32);animateOrbit();},{passive:false});
+  document.querySelectorAll('nav.links a').forEach(function(link){link.addEventListener('click',function(event){var index=nodes.findIndex(function(node){return '#'+node.dataset.target===link.getAttribute('href')});if(index<0)return;event.preventDefault();activate(index,true,true);if(window.innerWidth<=900)content.scrollIntoView({behavior:reduceMotion?'auto':'smooth'});});});
+  function activateHash(){var index=nodes.findIndex(function(node){return '#'+node.dataset.target===window.location.hash});activate(index<0?0:index,false,true);}
+  window.addEventListener('hashchange',activateHash);window.addEventListener('resize',renderOrbit);activateHash();renderOrbit();
 })();
 </script>
 
